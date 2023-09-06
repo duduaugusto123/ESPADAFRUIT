@@ -2,10 +2,10 @@
 #define LED_PIN 2
 
 AdafruitIO_Feed *digital = io.feed("saida");
-bool current = false;
-bool last = false;
+AdafruitIO_Feed *color = io.feed("led");
 
 void handleMessage(AdafruitIO_Data *data);
+void ColorHex(AdafruitIO_Data *data);
 
 void setup() {
   pinMode(LED_PIN, OUTPUT);
@@ -16,6 +16,7 @@ void setup() {
   io.connect();
 
   digital->onMessage(handleMessage);
+  color->onMessage(ColorHex);
 
   while (io.status() < AIO_CONNECTED) {
     Serial.print(".");
@@ -33,6 +34,22 @@ void loop() {
 
 void handleMessage(AdafruitIO_Data *data)
 {
+  
+  
+  Serial.println("recebido <- ");
+  if(data->toPinLevel() == HIGH){
+    Serial.println("HIGH");
+    digitalWrite(LED_PIN, data->toPinLevel());
+  }
+  else{
+    Serial.println("LOW");
+    digitalWrite(LED_PIN, data->toPinLevel());
+  } 
+
+}
+
+void ColorHex(AdafruitIO_Data *data)
+{
   Serial.print("string :");
   Serial.println(data->toString());
 
@@ -48,14 +65,4 @@ void handleMessage(AdafruitIO_Data *data)
   Serial.println(green);
   Serial.print("B :");
   Serial.println(blue);
-  
-  Serial.println("recebido <- ");
-  if(data->toPinLevel() == HIGH){
-    Serial.println("HIGH");
-  }
-  else{
-    Serial.println("LOW");
-  }
-  digitalWrite(LED_PIN, data->toPinLevel());
-
 }
